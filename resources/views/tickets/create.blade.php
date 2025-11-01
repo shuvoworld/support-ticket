@@ -108,6 +108,75 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        /* Dropdown Styles */
+        .dropdown-enhanced {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 50;
+            min-width: 200px;
+            background: white;
+            border: 1px solid rgba(229, 231, 235, 1);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+
+        /* Avatar Styles */
+        .avatar-enhanced {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         /* Enhanced Cards */
         .filament-card-enhanced {
             background: rgba(255, 255, 255, 0.95);
@@ -763,9 +832,9 @@
                 priorityIndicator.classList.add('priority-low');
             } else if (value === 'Medium') {
                 priorityIndicator.classList.add('priority-medium');
-            } else if (priority === 'High') {
+            } else if (value === 'High') {
                 priorityIndicator.classList.add('priority-high');
-            } else if (priority === 'Urgent') {
+            } else if (value === 'Urgent') {
                 priorityIndicator.classList.add('priority-urgent');
             }
         });

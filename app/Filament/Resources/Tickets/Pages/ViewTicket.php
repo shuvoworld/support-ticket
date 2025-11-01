@@ -5,20 +5,16 @@ namespace App\Filament\Resources\Tickets\Pages;
 use App\Filament\Resources\Tickets\TicketResource;
 use App\Models\Ticket;
 use App\Models\Comment;
+use App\Models\Status;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Model;
 
 class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;
-
-    public ?Model $record = null;
 
     public function mount($record): void
     {
@@ -65,6 +61,25 @@ class ViewTicket extends ViewRecord
                         ->send();
                 }),
 
+            Action::make('markInProgress')
+                ->label('Mark In Progress')
+                ->icon('heroicon-o-play')
+                ->color('warning')
+                ->visible(fn (): bool =>
+                    auth()->user()->hasRole(['super_admin', 'admin', 'agent']) &&
+                    $this->record->status->name === 'Open' &&
+                    auth()->user()->can('update', $this->record)
+                )
+                ->action(function () {
+                    $inProgressStatus = Status::where('name', 'In Progress')->first();
+                    $this->record->update(['status_id' => $inProgressStatus->id]);
+                    Notification::make()
+                        ->success()
+                        ->title('Status Updated')
+                        ->body("Ticket #{$this->record->id} is now marked as In Progress.")
+                        ->send();
+                }),
+
             Action::make('closeTicket')
                 ->label('Close Ticket')
                 ->icon('heroicon-o-check-circle')
@@ -96,8 +111,9 @@ class ViewTicket extends ViewRecord
                     auth()->user()->can('update', $this->record)
                 )
                 ->requiresConfirmation()
+                ->modalDescription('Are you sure you want to reopen this ticket?')
                 ->action(function () {
-                    $openStatus = \App\Models\Status::where('name', 'Open')->first();
+                    $openStatus = Status::where('name', 'Open')->first();
                     $this->record->update([
                         'status_id' => $openStatus->id,
                         'closed_at' => null,
@@ -108,78 +124,43 @@ class ViewTicket extends ViewRecord
                         ->body("Ticket #{$this->record->id} has been reopened.")
                         ->send();
                 }),
+
+            Action::make('escalateTicket')
+                ->label('Escalate')
+                ->icon('heroicon-o-arrow-up')
+                ->color('info')
+                ->visible(fn (): bool =>
+                    auth()->user()->hasRole(['super_admin', 'admin']) &&
+                    $this->record->status->name !== 'Closed'
+                )
+                ->requiresConfirmation()
+                ->modalDescription('Escalate this ticket to a senior agent for review.')
+                ->action(function () {
+                    // Update priority to High if not already Urgent
+                    if ($this->record->priority !== 'Urgent') {
+                        $this->record->update(['priority' => 'High']);
+                    }
+
+                    Notification::make()
+                        ->info()
+                        ->title('Ticket Escalated')
+                        ->body("Ticket #{$this->record->id} has been escalated and priority increased.")
+                        ->send();
+                }),
         ];
     }
 
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Textarea::make('content')
-                    ->label('Add Comment')
-                    ->required()
-                    ->rows(4)
-                    ->placeholder('Type your comment here...'),
-
-                Forms\Components\Checkbox::make('is_internal')
-                    ->label('Internal Note (not visible to customer)')
-                    ->visible(fn (): bool => auth()->user()->hasRole(['super_admin', 'admin', 'agent'])),
-            ])
-            ->statePath('data');
-    }
-
-    public function addComment(): void
-    {
-        $data = $this->form->getState();
-
-        $comment = Comment::create([
-            'ticket_id' => $this->record->id,
-            'user_id' => auth()->id(),
-            'content' => $data['content'],
-            'is_internal' => $data['is_internal'] ?? false,
-        ]);
-
-        // Auto-update status to "In Progress" if agent responds to an open ticket
-        if (auth()->user()->hasRole(['super_admin', 'admin', 'agent']) &&
-            $this->record->status->name === 'Open' &&
-            !$data['is_internal']) {
-
-            $inProgressStatus = \App\Models\Status::where('name', 'In Progress')->first();
-            $this->record->update(['status_id' => $inProgressStatus->id]);
-        }
-
-        $this->form->fill();
-
-        Notification::make()
-            ->success()
-            ->title('Comment Added')
-            ->body('Your comment has been added successfully.')
-            ->send();
-    }
-
-    public function getFooterWidgets(): array
+    protected function getFooterWidgets(): array
     {
         return [
             \App\Filament\Widgets\TicketCommentsWidget::class,
         ];
     }
 
-    protected function getViewData(): array
+    protected function getFooterWidgetsData(): array
     {
         return [
-            'comments' => $this->record->comments()
-                ->with('user')
-                ->when(!auth()->user()->hasRole(['super_admin', 'admin', 'agent']), function ($query) {
-                    $query->where('is_internal', false);
-                })
-                ->orderBy('created_at', 'asc')
-                ->get(),
+            'ticket' => $this->record,
         ];
-    }
-
-    public function render(): View
-    {
-        return view('filament.resources.tickets.pages.view-ticket', $this->getViewData())
-            ->layout('filament-panels::pages.layout');
     }
 }
