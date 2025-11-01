@@ -153,6 +153,12 @@ router.put('/:id', (req, res) => {
     return res.status(400).json({ error: 'Title and description are required' });
   }
 
+  // Validate priority if provided
+  const validPriorities = ['low', 'medium', 'high', 'urgent'];
+  if (priority && !validPriorities.includes(priority)) {
+    return res.status(400).json({ error: 'Invalid priority. Valid values: low, medium, high, urgent' });
+  }
+
   db.run(
     'UPDATE tickets SET title = ?, description = ?, priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND organization = ?',
     [title, description, priority, ticketId, organization],
