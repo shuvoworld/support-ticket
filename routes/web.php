@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
 
@@ -10,10 +11,10 @@ use App\Http\Controllers\TicketController;
 Route::get('/', function () {
     if (auth()->check()) {
         $user = auth()->user();
-        if ($user->hasRole(['super_admin', 'admin', 'agent'])) {
+        if ($user->hasRole(['super_admin', 'admin'])) {
             return redirect('/admin');
         } else {
-            return redirect()->route('dashboard');
+            return redirect()->route('tickets.index');
         }
     }
     return view('landing');
@@ -28,10 +29,10 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 // Authenticated user routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     Route::resource('tickets', TicketController::class)->only(['index', 'create', 'store', 'show']);
-Route::post('tickets/{ticket}/comments', [TicketController::class, 'addComment'])->name('tickets.addComment');
+Route::get('tickets/{ticket}/comments', [CommentController::class, 'index'])->name('tickets.comments.index');
+    Route::post('tickets/{ticket}/comments', [CommentController::class, 'store'])->name('tickets.comments.store');
+    Route::post('tickets/{ticket}/comments/legacy', [TicketController::class, 'addComment'])->name('tickets.addComment');
 });
 
 // Include Filament routes

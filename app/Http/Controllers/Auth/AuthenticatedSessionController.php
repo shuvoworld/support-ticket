@@ -45,10 +45,10 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Redirect based on user role
-        if ($user->hasRole(['super_admin', 'admin', 'agent'])) {
+        if ($user->hasRole(['super_admin', 'admin'])) {
             return redirect('/admin');
         } else {
-            return redirect()->route('dashboard');
+            return redirect()->route('tickets.index');
         }
     }
 

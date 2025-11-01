@@ -51,9 +51,9 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Admin and agent roles can access admin panel
+        // Only super admin and admin roles can access admin panel
         if ($panel->getId() === 'admin') {
-            return $this->hasRole(['super_admin', 'admin', 'agent']);
+            return $this->hasRole(['super_admin', 'admin']);
         }
 
         // Regular users can access user panel

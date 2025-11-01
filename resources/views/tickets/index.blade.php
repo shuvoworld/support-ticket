@@ -118,16 +118,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                             </svg>
                         </div>
-                        <a href="{{ route('dashboard') }}" class="text-xl font-bold text-gray-800 hover:text-gray-600 transition-all duration-300">
+                        <a href="{{ route('tickets.index') }}" class="text-xl font-bold text-gray-800 hover:text-gray-600 transition-all duration-300">
                             Support Ticket System
                         </a>
                     </div>
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all duration-200">
-                        Dashboard
-                    </a>
                     <a href="{{ route('tickets.index') }}" class="text-gray-900 bg-gray-50 px-3 py-2 rounded-lg text-sm font-medium">
                         My Tickets
                     </a>
@@ -167,10 +164,7 @@
                              @click.away="open = false"
                              class="absolute right-0 mt-2 w-48 white-card rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
                             <div class="p-2">
-                                <a href="{{ route('dashboard') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-all duration-200">
-                                    Dashboard
-                                </a>
-                                <a href="{{ route('tickets.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-all duration-200">
+                                                                <a href="{{ route('tickets.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-all duration-200">
                                     My Tickets
                                 </a>
                                 <a href="{{ route('tickets.create') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-all duration-200">

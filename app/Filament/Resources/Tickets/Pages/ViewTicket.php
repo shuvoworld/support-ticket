@@ -16,9 +16,20 @@ class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;
 
+    public $comments;
+
     public function mount($record): void
     {
         parent::mount($record);
+
+        // Load comments for the ticket
+        $this->comments = $this->record->comments()
+            ->with('user')
+            ->when(!auth()->user()->hasRole(['super_admin', 'admin', 'agent']), function ($query) {
+                $query->where('is_internal', false);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         // Auto-assign ticket to current agent if not assigned
         if (auth()->user()->hasRole(['super_admin', 'admin', 'agent']) &&
@@ -147,20 +158,6 @@ class ViewTicket extends ViewRecord
                         ->body("Ticket #{$this->record->id} has been escalated and priority increased.")
                         ->send();
                 }),
-        ];
-    }
-
-    protected function getFooterWidgets(): array
-    {
-        return [
-            \App\Filament\Widgets\TicketCommentsWidget::class,
-        ];
-    }
-
-    protected function getFooterWidgetsData(): array
-    {
-        return [
-            'ticket' => $this->record,
         ];
     }
 }

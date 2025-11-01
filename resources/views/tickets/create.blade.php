@@ -507,7 +507,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group">
+                    <a href="{{ route('tickets.index') }}" class="flex items-center space-x-3 group">
                         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h3m1 8l-3-3H5a2 2 0 01-2 2v8a2 2 0 002 2h6a2 2 0 002-2v-8a2 2 0 00-2-2h-1l-3 3z"></path>
@@ -532,11 +532,11 @@
                         </button>
 
                         <div id="dropdownMenu" class="dropdown-menu">
-                            <a href="{{ route('dashboard') }}" class="dropdown-item">
+                            <a href="{{ route('tickets.index') }}" class="dropdown-item">
                                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7m-7 7h14"></path>
                                 </svg>
-                                Dashboard
+                                Tickets
                             </a>
                             <a href="{{ route('tickets.index') }}" class="dropdown-item">
                                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
